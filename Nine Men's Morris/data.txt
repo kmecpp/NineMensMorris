@@ -1,0 +1,5 @@
+# User's display name
+name=UserFucks
+
+message=Dicks
+
