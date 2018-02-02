@@ -1,6 +1,6 @@
-package com.kmecpp.oddsare.ui;
+package com.kmecpp.nmm.ui;
 
-import com.kmecpp.oddsare.ServerInfo;
+import com.kmecpp.nmm.ServerInfo;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;

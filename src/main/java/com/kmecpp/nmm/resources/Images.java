@@ -1,10 +1,16 @@
-package com.kmecpp.oddsare;
+package com.kmecpp.nmm.resources;
 
 import javafx.scene.image.Image;
 
 public class Images {
 
-	public static final Image ICON = new Image("image/icon.png");
+	private static final String PARENT_PATH = "images/";
+
+	public static final Image ICON = getImage("icon.png");
+
+	private static Image getImage(String relativePath) {
+		return new Image(PARENT_PATH + relativePath);
+	}
 
 	public abstract static class Resource {
 

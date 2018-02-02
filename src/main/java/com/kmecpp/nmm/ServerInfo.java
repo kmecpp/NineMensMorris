@@ -1,4 +1,4 @@
-package com.kmecpp.oddsare;
+package com.kmecpp.nmm;
 
 public class ServerInfo {
 

@@ -1,4 +1,4 @@
-package com.kmecpp.oddsare.ui;
+package com.kmecpp.nmm.ui;
 
 public class HostGameController {
 

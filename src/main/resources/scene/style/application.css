@@ -1,0 +1,15 @@
+/*
+.root {
+	-fx-background-color: linear-gradient(from 0% 100% to 300px 100%, rgb(80,80,80), rgb(40,40,40));
+}
+*/
+
+.root {
+	-fx-text-alignment: center;
+	-fx-background-image: url("../../images/background.jpg");
+}
+
+
+/*
+ linear-gradient(from 0% 100% to 30% 100%, rgb(80,80,80), rgb(40,40,40))
+ */
