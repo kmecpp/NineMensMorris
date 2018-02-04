@@ -14,9 +14,9 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1294.0" style="-fx-background-color: linear-gradient(from 0% 100% to 350px 100%, rgb(80,80,80), rgb(40,40,40));" stylesheets="@style/application.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <left>
-      <VBox id="side-menu" alignment="CENTER" prefHeight="800.0" prefWidth="443.0" BorderPane.alignment="CENTER">
+      <VBox id="side-menu" alignment="CENTER" prefHeight="800.0" prefWidth="386.0" BorderPane.alignment="CENTER">
          <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" disable="true" maxHeight="107.0" maxWidth="423.0" mnemonicParsing="false" onAction="#clickOnePlayer" prefHeight="107.0" prefWidth="344.0" stylesheets="@style/menu_button.css" text="One Player">
+            <Button fx:id="button" alignment="CENTER" contentDisplay="CENTER" disable="true" maxHeight="107.0" maxWidth="423.0" mnemonicParsing="false" onAction="#clickOnePlayer" onMouseClicked="#buttonClicked" prefHeight="107.0" prefWidth="344.0" stylesheets="@style/menu_button.css" text="One Player">
                <font>
                   <Font name="Verdana" size="32.0" />
                </font>
@@ -24,27 +24,27 @@
                   <Insets left="10.0" />
                </VBox.margin>
             </Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="423.0" mnemonicParsing="false" onAction="#clickTwoPlayer" prefHeight="107.0" prefWidth="423.0" stylesheets="@style/menu_button.css" text="Two Player">
+            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="423.0" mnemonicParsing="false" onAction="#clickTwoPlayer" onMouseClicked="#buttonClicked" prefHeight="107.0" prefWidth="423.0" stylesheets="@style/menu_button.css" text="Two Player">
                <font>
                   <Font name="Verdana" size="32.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" disable="true" maxHeight="107.0" maxWidth="430.0" mnemonicParsing="false" onAction="#clickOnline" prefHeight="107.0" prefWidth="313.0" stylesheets="@style/menu_button.css" text="Online">
+            <Button alignment="CENTER" contentDisplay="CENTER" disable="true" maxHeight="107.0" maxWidth="430.0" mnemonicParsing="false" onAction="#clickOnline" onMouseClicked="#buttonClicked" prefHeight="107.0" prefWidth="313.0" stylesheets="@style/menu_button.css" text="Online">
                <font>
                   <Font name="Verdana" size="32.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="405.0" mnemonicParsing="false" onAction="#clickSettings" prefHeight="107.0" prefWidth="405.0" stylesheets="@style/menu_button.css" text="Settings">
+            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="405.0" mnemonicParsing="false" onAction="#clickSettings" onMouseClicked="#buttonClicked" prefHeight="107.0" prefWidth="405.0" stylesheets="@style/menu_button.css" text="Settings">
                <font>
                   <Font name="Verdana" size="32.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="393.0" mnemonicParsing="false" onAction="#clickAbout" prefHeight="62.0" prefWidth="393.0" stylesheets="@style/menu_button.css" text="About">
+            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="393.0" mnemonicParsing="false" onAction="#clickAbout" onMouseClicked="#buttonClicked" prefHeight="62.0" prefWidth="393.0" stylesheets="@style/menu_button.css" text="About">
                <font>
                   <Font name="Verdana" size="32.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="393.0" mnemonicParsing="false" onAction="#clickExit" prefHeight="62.0" prefWidth="393.0" stylesheets="@style/menu_button.css" text="Exit">
+            <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="393.0" mnemonicParsing="false" onAction="#clickExit" onMouseClicked="#buttonClicked" prefHeight="62.0" prefWidth="393.0" stylesheets="@style/menu_button.css" text="Exit">
                <font>
                   <Font name="Verdana" size="32.0" />
                </font>
@@ -68,9 +68,9 @@
       <Insets />
    </opaqueInsets>
    <center>
-      <VBox id="title-display" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="881.0" spacing="60.0" style="-fx-background-image: image\background.png;" BorderPane.alignment="CENTER">
+      <VBox id="title-display" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="839.0" spacing="60.0" style="-fx-background-image: image\background.png;" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" text="Nine Men's Morris" textFill="#00bf23">
+            <Label alignment="CENTER" text="Nine Men's Morris" textFill="GOLD">
                <font>
                   <Font name="Verdana Bold" size="60.0" />
                </font>

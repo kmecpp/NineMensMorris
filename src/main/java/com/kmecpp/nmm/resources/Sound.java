@@ -1,32 +1,34 @@
 package com.kmecpp.nmm.resources;
 
+import java.net.URL;
+
+import com.kmecpp.nmm.Game;
+
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public enum Sound {
 
-	BUTTON_HOVER,
+	BUTTON_CLICK,
 
 	;
 
 	static {
 		for (Sound sound : values()) {
+			URL path = Game.getResource("sounds/" + sound.name().toLowerCase().replace('_', '-') + ".wav");
 			try {
-				sound.player = new MediaPlayer(new Media("sound/" + sound.getFileName()));
+				sound.media = new Media(path.toURI().toString());
 			} catch (Exception e) {
-				System.err.println("Could not load sound: " + sound.getFileName());
+				System.err.println("Could not load sound: " + path);
+				e.printStackTrace();
 			}
 		}
 	}
 
-	public String getFileName() {
-		return this.name().toLowerCase().replace('_', '-') + ".ogg";
-	}
-
-	private MediaPlayer player;
+	private Media media;
 
 	public void play() {
-		player.play();
+		new MediaPlayer(media).play();
 	}
 
 	//	private static final String PARENT_PATH = "sound/";

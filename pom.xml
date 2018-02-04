@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kmecpp</groupId>
-	<artifactId>oddsare</artifactId>
+	<artifactId>nmm</artifactId>
 	<version>1.0</version>
-	<name>Odds Are</name>
-	<description>Multiplayer odds are game in Java</description>
+	<name>Nine Men's Morris</name>
+	<description>Classic Nine Men's Morris game written in Java</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,6 +16,11 @@
 			<groupId>com.kmecpp</groupId>
 			<artifactId>jlib</artifactId>
 			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jcraft</groupId>
+			<artifactId>jorbis</artifactId>
+			<version>0.0.17</version>
 		</dependency>
 	</dependencies>
 
@@ -29,9 +34,6 @@
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
 			</resource>
 		</resources>
 		<plugins>
