@@ -12,24 +12,31 @@ import javafx.scene.Scene;
 
 public enum GameView {
 
-	MENU(new MenuController()),
-	GAME(new GameController()),
+	MENU(MenuController.class),
+	GAME(GameController.class),
 
 	;
 
-	private Object controller;
+	private Class<?> controller;
 	private URL path;
 
-	private GameView(Object controller) {
+	private GameView(Class<?> controller) {
 		this.controller = controller;
 	}
 
 	static {
-		for (GameView sound : values()) {
+		for (GameView gameView : values()) {
 			try {
-				sound.path = Game.getResource("scene/" + sound.getFileName());
+				if (gameView.controller.getConstructor() == null) {
+					System.err.println("Game view '" + gameView.controller + "' has no public default constructor!");
+				}
+			} catch (NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
+			try {
+				gameView.path = Game.getResource("scene/" + gameView.getFileName());
 			} catch (Exception e) {
-				System.err.println("Could not load message: " + sound.getFileName() + "  (" + e.getMessage() + ")");
+				System.err.println("Could not load message: " + gameView.getFileName() + "  (" + e.getMessage() + ")");
 				//				e.printStackTrace();
 			}
 		}
