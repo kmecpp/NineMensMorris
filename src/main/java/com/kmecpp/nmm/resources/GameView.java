@@ -47,7 +47,11 @@ public enum GameView {
 	}
 
 	public Object getController() {
-		return controller;
+		try {
+			return controller.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException();
+		}
 	}
 
 	public URL getPath() {
@@ -56,10 +60,11 @@ public enum GameView {
 
 	public void load() {
 		try {
+			System.out.println(name());
 			FXMLLoader loader = new FXMLLoader(path);
-			loader.setController(controller);
+			loader.setController(controller.newInstance());
 			Game.getStage().setScene(new Scene(loader.load()));
-		} catch (IOException e) {
+		} catch (IOException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
