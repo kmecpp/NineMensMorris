@@ -46,13 +46,13 @@ public enum GameView {
 		return this.name().toLowerCase().replace('_', '-') + ".fxml";
 	}
 
-	public Object getController() {
-		try {
-			return controller.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException();
-		}
-	}
+	//	public Object getController() {
+	//		try {
+	//			return controller.newInstance();
+	//		} catch (InstantiationException | IllegalAccessException e) {
+	//			throw new RuntimeException();
+	//		}
+	//	}
 
 	public URL getPath() {
 		return path;
@@ -60,7 +60,6 @@ public enum GameView {
 
 	public void load() {
 		try {
-			System.out.println(name());
 			FXMLLoader loader = new FXMLLoader(path);
 			loader.setController(controller.newInstance());
 			Game.getStage().setScene(new Scene(loader.load()));

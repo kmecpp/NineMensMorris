@@ -60,7 +60,7 @@ public class MenuController {
 			stages.get(1).toFront();;
 			return;
 		}
-		Stage stage = Game.newStage("About", 600, 500);
+		Stage stage = Game.newStage("About", 700, 400);
 
 		ScrollPane scrollPane = new ScrollPane();
 		Scene scene = new Scene(scrollPane);
@@ -83,9 +83,11 @@ public class MenuController {
 		Text licenseText = new Text();
 		licenseText.setText("\n\n" + Message.LICENSE.getText());
 
+		//		stage.minWidthProperty().bind(textFlow.widthProperty());
+
 		textFlow.getChildren().addAll(title, version, links, licenseText);
 		scrollPane.setContent(textFlow);
-		scene.setRoot(textFlow);
+		scene.setRoot(scrollPane);
 		stage.setScene(scene);
 		stage.show();
 	}
