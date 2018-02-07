@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.kmecpp.nmm.Game;
-import com.kmecpp.nmm.GameController;
 import com.kmecpp.nmm.MenuController;
+import com.kmecpp.nmm.game.GameController;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
