@@ -3,20 +3,26 @@ package com.kmecpp.nmm.game;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.kmecpp.nmm.Game;
+import com.kmecpp.nmm.NineMensMorris;
+import com.kmecpp.nmm.resources.Images;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -31,13 +37,14 @@ public class GameController implements Initializable {
 	private Stage stage;
 	private GraphicsContext gc;
 
-	private int strokeWeight = 4;
+	private int strokeWeight = 5;
 
-	private GameBoard gameBoard;
+	private GameBoard gameboard = new GameBoard();
+	private GameState gameState = GameState.SETUP;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		stage = Game.getStage();
+		stage = NineMensMorris.getStage();
 
 		//Start scene maximized and stay maximized
 		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
@@ -47,37 +54,32 @@ public class GameController implements Initializable {
 		stage.setMinWidth(800);
 		stage.setMinHeight(500);
 
-		pane.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
+		//		pane.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
+		pane.setBackground(new Background(new BackgroundImage(Images.GAME_BACKGROUND, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 
 		gc = canvas.getGraphicsContext2D();
 
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());
-		Game.getStage().widthProperty().addListener((val, oldVal, newVal) -> drawStage(newVal.intValue(), (int) stage.getHeight()));
-		Game.getStage().heightProperty().addListener((val, oldVal, newVal) -> drawStage((int) stage.getWidth(), newVal.intValue()));
+		NineMensMorris.getStage().widthProperty().addListener((val, oldVal, newVal) -> drawStage(newVal.intValue(), (int) stage.getHeight()));
+		NineMensMorris.getStage().heightProperty().addListener((val, oldVal, newVal) -> drawStage((int) stage.getWidth(), newVal.intValue()));
 	}
 
-	private void drawStage(int screenWidth, int screenHeight) {
-		pane.resize(screenWidth, screenHeight - 40);
-		gc.clearRect(0, 0, screenWidth, screenHeight);
-		gameBoard = new GameBoard();
+	private void drawStage(int width, int height) {
+		pane.resize(width, height - 40);
+		gc.clearRect(0, 0, width, height);
 
 		int centerX = (int) canvas.getWidth() / 2;
 		int centerY = (int) canvas.getHeight() / 2;
 
-		int marginX = 0;
-		int marginY = 0;
+		int space = Math.min(width, height) / 9;
+		int[] radii = new int[] { space, space * 2, space * 3 };
 
-		//		System.out.println(height);
+		int pieceId = 0;
+		for (int r = 0; r < 3; r++) {
+			int ringSize = radii[r];
 
-		int space = Math.min(screenWidth, screenHeight) / 9;
-		int minRadius = space;
-
-		for (int t = 0; t < 3; t++) {
-
-			//			int spacingX = (screenWidth - 2 * marginX) / 3;
-			//			int spacingY = (screenHeight - 2 * marginY) / 3;
-			int ringSize = minRadius + space * t;
+			walls(centerX, centerY, 2 * ringSize);
 
 			for (int i = -1; i <= 1; i++) {
 				for (int j = -1; j <= 1; j++) {
@@ -86,12 +88,21 @@ public class GameController implements Initializable {
 					}
 					int x = centerX + ringSize * i;
 					int y = centerY + ringSize * j;
-					//					System.out.println("TEST: " + y);
-					circle(x, y, 30);
+
+					GamePiece piece = gameboard.getPiece(pieceId);
+					if (piece == null) {
+						//												gc.setFill(Color.RED);
+						circle(x, y, 40);
+						gc.setFill(Color.BLACK);
+					} else {
+						gc.setFill(Color.BLUE);
+						circle(x, y, 50);
+						gc.setFill(Color.BLACK);
+					}
+
+					pieceId++;
 				}
 			}
-
-			walls(centerX, centerY, 2 * ringSize);
 
 			//			System.out.println(spacing);
 			//			gc.rect(centerX - 2 * spacing, centerY, 2 * spacing, strokeWeight);
@@ -103,6 +114,32 @@ public class GameController implements Initializable {
 			//			gc.fillText("DON'T BE A DINGUS", centerX, centerY, 1800);
 			//			gc.setFill(Color.BLACK);
 		}
+
+		int ringRange = radii[1];
+		hbar(centerX - ringRange, centerY, ringRange); //Left
+		hbar(centerX + ringRange, centerY, ringRange); //Right
+		vbar(centerX, centerY - ringRange, ringRange); //Top
+		vbar(centerX, centerY + ringRange, ringRange); //Bottom
+
+		int textY = (int) (centerY * 0.6);
+		int textSpace = centerX - radii[2];
+		int textCenterLeft = textSpace / 2;
+		int textCenterRight = width - textCenterLeft;
+
+		System.out.println(textSpace);
+		int maxWidth = (int) (textSpace / 1.6);
+		int textSize = textSpace / 10 + 5;
+		gc.setFont(Font.font("Verdana", FontWeight.BLACK, textSize));
+
+		gc.setTextAlign(TextAlignment.CENTER);
+		gc.setTextBaseline(VPos.BOTTOM);
+		gc.setFill(Color.BLACK);
+		gc.fillText("Player One", textCenterLeft, textY, maxWidth);
+		hbar(textCenterLeft, textY + 3, maxWidth);
+		gc.fillText("Player Two", textCenterRight, textY, maxWidth);
+		hbar(textCenterRight, textY + 3, maxWidth);
+
+		gc.setFill(Color.BLACK);
 	}
 
 	@FXML
@@ -116,18 +153,27 @@ public class GameController implements Initializable {
 
 	private void walls(int x, int y, int size) {
 		int radius = size / 2;
-		int xMin = x - radius;
-		int xMax = x + radius;
-		int yMin = y - radius;
-		int yMax = y + radius;
-		gc.fillRect(xMin, yMin, strokeWeight, size);
-		gc.fillRect(xMax, yMin, strokeWeight, size);
-		gc.fillRect(xMin, yMin, size, strokeWeight);
-		gc.fillRect(xMin, yMax, size + strokeWeight, strokeWeight);
+		int halfStroke = strokeWeight / 2;
+		int xMin = x - radius - halfStroke;
+		int xMax = x + radius - halfStroke;
+		int yMin = y - radius - halfStroke;
+		int yMax = y + radius - halfStroke;
+		gc.fillRect(xMin, yMin, strokeWeight, size); //Left
+		gc.fillRect(xMax, yMin, strokeWeight, size); //Right
+		gc.fillRect(xMin, yMin, size, strokeWeight); //Top
+		gc.fillRect(xMin, yMax, size + strokeWeight, strokeWeight); //Bottom
+	}
+
+	private void hbar(int x, int y, int length) {
+		gc.fillRect(x - length / 2, y, length, strokeWeight);
+	}
+
+	private void vbar(int x, int y, int length) {
+		gc.fillRect(x, y - length / 2, strokeWeight, length);
 	}
 
 	//	private void line(int x1, int y1, int x2, int y2) {
-	//		//		gc.fillRect()
+	//		gc.fill
 	//	}
 
 	private void circle(int x, int y, int size) {

@@ -3,7 +3,7 @@ package com.kmecpp.nmm.resources;
 import java.io.IOException;
 import java.net.URL;
 
-import com.kmecpp.nmm.Game;
+import com.kmecpp.nmm.NineMensMorris;
 import com.kmecpp.nmm.MenuController;
 import com.kmecpp.nmm.game.GameController;
 
@@ -34,7 +34,7 @@ public enum GameView {
 				e.printStackTrace();
 			}
 			try {
-				gameView.path = Game.getResource("scene/" + gameView.getFileName());
+				gameView.path = NineMensMorris.getResource("scene/" + gameView.getFileName());
 			} catch (Exception e) {
 				System.err.println("Could not load message: " + gameView.getFileName() + "  (" + e.getMessage() + ")");
 				//				e.printStackTrace();
@@ -62,7 +62,7 @@ public enum GameView {
 		try {
 			FXMLLoader loader = new FXMLLoader(path);
 			loader.setController(controller.newInstance());
-			Game.getStage().setScene(new Scene(loader.load()));
+			NineMensMorris.getStage().setScene(new Scene(loader.load()));
 		} catch (IOException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

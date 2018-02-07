@@ -38,7 +38,7 @@ public class MenuController {
 	private void clickTwoPlayer() {
 		Sound.BUTTON_CLICK.play(); //TODO: Figure out why this is necessary?
 		GameView.GAME.load();
-		Game.getStage().centerOnScreen();
+		NineMensMorris.getStage().centerOnScreen();
 	}
 
 	@FXML
@@ -60,7 +60,7 @@ public class MenuController {
 			stages.get(1).toFront();;
 			return;
 		}
-		Stage stage = Game.newStage("About", 700, 400);
+		Stage stage = NineMensMorris.newStage("About", 700, 400);
 
 		ScrollPane scrollPane = new ScrollPane();
 		Scene scene = new Scene(scrollPane);
@@ -70,7 +70,7 @@ public class MenuController {
 
 		Text title = new Text("Nine Mens Morris\n\n");
 		title.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
-		Text version = new Text("Version: " + Game.VERSION + "\n");
+		Text version = new Text("Version: " + NineMensMorris.VERSION + "\n");
 		//		Text version = new Text(Message.VERSION.getText() + "\n\n");
 		VBox links = new VBox();
 		TextFlow github = new TextFlow(new Text("GitHub:"), new WebsiteLink("https://github.com/kmecpp/NineMensMorris"));
@@ -97,7 +97,7 @@ public class MenuController {
 		//		if (tabPane.getSelectionModel().getSelectedIndex() > 0) {
 		//			tabPane.getSelectionModel().select(0);
 		//		} else {
-		Game.getStage().hide();
+		NineMensMorris.getStage().hide();
 		System.exit(0);
 		//		}
 	}
