@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import com.kmecpp.nmm.NineMensMorris;
 import com.kmecpp.nmm.resources.Images;
+import com.kmecpp.nmm.resources.Sound;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,8 +40,7 @@ public class GameController implements Initializable {
 
 	private int strokeWeight = 5;
 
-	private GameBoard gameboard = new GameBoard();
-	private GameState gameState = GameState.SETUP;
+	private Game game = new Game();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -63,11 +63,14 @@ public class GameController implements Initializable {
 		canvas.heightProperty().bind(pane.heightProperty());
 		NineMensMorris.getStage().widthProperty().addListener((val, oldVal, newVal) -> drawStage(newVal.intValue(), (int) stage.getHeight()));
 		NineMensMorris.getStage().heightProperty().addListener((val, oldVal, newVal) -> drawStage((int) stage.getWidth(), newVal.intValue()));
+		drawStage((int) stage.getWidth(), (int) stage.getHeight());
 	}
 
 	private void drawStage(int width, int height) {
 		pane.resize(width, height - 40);
 		gc.clearRect(0, 0, width, height);
+		gc.rect(0, 0, 1000, 1000);
+		System.out.println("DRAWWW: " + gc);
 
 		int centerX = (int) canvas.getWidth() / 2;
 		int centerY = (int) canvas.getHeight() / 2;
@@ -75,7 +78,7 @@ public class GameController implements Initializable {
 		int space = Math.min(width, height) / 9;
 		int[] radii = new int[] { space, space * 2, space * 3 };
 
-		int pieceId = 0;
+		int positionId = 0;
 		for (int r = 0; r < 3; r++) {
 			int ringSize = radii[r];
 
@@ -89,18 +92,19 @@ public class GameController implements Initializable {
 					int x = centerX + ringSize * i;
 					int y = centerY + ringSize * j;
 
-					GamePiece piece = gameboard.getPiece(pieceId);
-					if (piece == null) {
-						//												gc.setFill(Color.RED);
-						circle(x, y, 40);
+					game.setPosition(positionId, x, y);
+
+					GamePosition position = game.getPosition(positionId);
+					if (position.isAvailable()) {
+						circle(x, y, Game.POSITION_SIZE);
 						gc.setFill(Color.BLACK);
 					} else {
 						gc.setFill(Color.BLUE);
-						circle(x, y, 50);
+						circle(x, y, Game.PIECE_SIZE);
 						gc.setFill(Color.BLACK);
 					}
 
-					pieceId++;
+					positionId++;
 				}
 			}
 
@@ -115,6 +119,7 @@ public class GameController implements Initializable {
 			//			gc.setFill(Color.BLACK);
 		}
 
+		//Draw connecting lines (should this be before positions are drawn?)
 		int ringRange = radii[1];
 		hbar(centerX - ringRange, centerY, ringRange); //Left
 		hbar(centerX + ringRange, centerY, ringRange); //Right
@@ -126,7 +131,6 @@ public class GameController implements Initializable {
 		int textCenterLeft = textSpace / 2;
 		int textCenterRight = width - textCenterLeft;
 
-		System.out.println(textSpace);
 		int maxWidth = (int) (textSpace / 1.6);
 		int textSize = textSpace / 10 + 5;
 		gc.setFont(Font.font("Verdana", FontWeight.BLACK, textSize));
@@ -144,7 +148,20 @@ public class GameController implements Initializable {
 
 	@FXML
 	private void onMouseClicked(MouseEvent e) {
-		System.out.println(e);
+		int x = (int) e.getX();
+		int y = (int) e.getY();
+		GamePosition position = game.getPosition(x, y);
+		if (position != null) {
+			if (game.isActive()) {
+				//Select or move piece
+			} else {
+				if (position.isAvailable()) {
+					position.setPiece(new GamePiece(position, game.getCurrentTeam()));
+				} else {
+					Sound.ERROR.play();
+				}
+			}
+		}
 	}
 
 	//	private void strokeWeight(int strokeWeight) {

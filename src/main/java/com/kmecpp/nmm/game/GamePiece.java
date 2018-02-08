@@ -1,9 +1,21 @@
 package com.kmecpp.nmm.game;
 
-public class GamePiece extends GamePosition {
+public class GamePiece {
 
-	public GamePiece(int x, int y) {
-		super(x, y);
+	private GamePosition position;
+	private Team team;
+
+	public GamePiece(GamePosition position, Team team) {
+		this.position = position;
+		this.team = team;
+	}
+
+	public GamePosition getPosition() {
+		return position;
+	}
+
+	public Team getTeam() {
+		return team;
 	}
 
 }

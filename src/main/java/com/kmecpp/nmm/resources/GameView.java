@@ -3,8 +3,8 @@ package com.kmecpp.nmm.resources;
 import java.io.IOException;
 import java.net.URL;
 
-import com.kmecpp.nmm.NineMensMorris;
 import com.kmecpp.nmm.MenuController;
+import com.kmecpp.nmm.NineMensMorris;
 import com.kmecpp.nmm.game.GameController;
 
 import javafx.fxml.FXMLLoader;

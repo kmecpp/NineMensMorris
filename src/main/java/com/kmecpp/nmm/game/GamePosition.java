@@ -4,6 +4,7 @@ public class GamePosition {
 
 	private int x;
 	private int y;
+	private GamePiece piece;
 
 	public GamePosition(int x, int y) {
 		this.x = x;
@@ -17,6 +18,30 @@ public class GamePosition {
 	public int getY() {
 		return y;
 	}
+
+	public GamePiece getPiece() {
+		return piece;
+	}
+
+	public double distance(int x, int y) {
+		return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2));
+	}
+
+	public void setCoords(int x, int y) {
+
+	}
+
+	public void setPiece(GamePiece piece) {
+		this.piece = piece;
+	}
+
+	public boolean isAvailable() {
+		return piece == null;
+	}
+
+	//	public boolean hasPiece() {
+	//		return piece != null;
+	//	}
 
 	@Override
 	public int hashCode() {

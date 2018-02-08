@@ -10,6 +10,8 @@ import javafx.scene.media.MediaPlayer;
 public enum Sound {
 
 	BUTTON_CLICK,
+	PIECE_SET,
+	ERROR,
 
 	;
 
