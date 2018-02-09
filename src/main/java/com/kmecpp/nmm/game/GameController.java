@@ -54,29 +54,37 @@ public class GameController implements Initializable {
 		stage.setMinWidth(800);
 		stage.setMinHeight(500);
 
-		//		pane.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
+		//		//		pane.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
 		pane.setBackground(new Background(new BackgroundImage(Images.GAME_BACKGROUND, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
-
 		gc = canvas.getGraphicsContext2D();
-
-		canvas.widthProperty().bind(pane.widthProperty());
-		canvas.heightProperty().bind(pane.heightProperty());
+		canvas.widthProperty().bind(stage.widthProperty());
+		canvas.heightProperty().bind(stage.heightProperty());
 		NineMensMorris.getStage().widthProperty().addListener((val, oldVal, newVal) -> drawStage(newVal.intValue(), (int) stage.getHeight()));
 		NineMensMorris.getStage().heightProperty().addListener((val, oldVal, newVal) -> drawStage((int) stage.getWidth(), newVal.intValue()));
 		drawStage((int) stage.getWidth(), (int) stage.getHeight());
 	}
 
+	private void redraw() {
+		drawStage((int) stage.getWidth(), (int) stage.getHeight());
+	}
+
 	private void drawStage(int width, int height) {
-		pane.resize(width, height - 40);
+		//		pane.resize(width, height - 40);
 		gc.clearRect(0, 0, width, height);
 		gc.rect(0, 0, 1000, 1000);
-		System.out.println("DRAWWW: " + gc);
 
 		int centerX = (int) canvas.getWidth() / 2;
-		int centerY = (int) canvas.getHeight() / 2;
+		int centerY = (int) canvas.getHeight() / 2 - 30;
 
 		int space = Math.min(width, height) / 9;
 		int[] radii = new int[] { space, space * 2, space * 3 };
+
+		//Draw connecting lines (should this be before positions are drawn?)
+		int ringRange = radii[1];
+		hbar(centerX - ringRange, centerY, ringRange); //Left
+		hbar(centerX + ringRange, centerY, ringRange); //Right
+		vbar(centerX, centerY - ringRange, ringRange); //Top
+		vbar(centerX, centerY + ringRange, ringRange); //Bottom
 
 		int positionId = 0;
 		for (int r = 0; r < 3; r++) {
@@ -119,13 +127,6 @@ public class GameController implements Initializable {
 			//			gc.setFill(Color.BLACK);
 		}
 
-		//Draw connecting lines (should this be before positions are drawn?)
-		int ringRange = radii[1];
-		hbar(centerX - ringRange, centerY, ringRange); //Left
-		hbar(centerX + ringRange, centerY, ringRange); //Right
-		vbar(centerX, centerY - ringRange, ringRange); //Top
-		vbar(centerX, centerY + ringRange, ringRange); //Bottom
-
 		int textY = (int) (centerY * 0.6);
 		int textSpace = centerX - radii[2];
 		int textCenterLeft = textSpace / 2;
@@ -140,10 +141,16 @@ public class GameController implements Initializable {
 		gc.setFill(Color.BLACK);
 		gc.fillText("Player One", textCenterLeft, textY, maxWidth);
 		hbar(textCenterLeft, textY + 3, maxWidth);
+
 		gc.fillText("Player Two", textCenterRight, textY, maxWidth);
 		hbar(textCenterRight, textY + 3, maxWidth);
 
 		gc.setFill(Color.BLACK);
+	}
+	
+	@FXML
+	private void onMouseDragged(MouseEvent e) {
+		
 	}
 
 	@FXML
@@ -157,6 +164,7 @@ public class GameController implements Initializable {
 			} else {
 				if (position.isAvailable()) {
 					position.setPiece(new GamePiece(position, game.getCurrentTeam()));
+					redraw();
 				} else {
 					Sound.ERROR.play();
 				}

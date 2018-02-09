@@ -32,7 +32,7 @@ public class NineMensMorris extends Application {
 		stage.setTitle("Nine Men's Morris");
 		stage.getIcons().add(Images.ICON);
 
-		GameView.MENU.load();
+		GameView.GAME.load();
 		//		setPage(Page.HOME);
 		stage.show();
 

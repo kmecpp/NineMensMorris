@@ -7,7 +7,8 @@ public class Team {
 	private String name;
 	private Color color;
 
-	private int pieces = 9;
+	private int setupPieces = 9;
+	private int activePieces = 0;
 
 	public Team(String name, Color color) {
 		this.name = name;
@@ -22,7 +23,16 @@ public class Team {
 		return color;
 	}
 
-	public int getPieces() {
-		return pieces;
+	public void placePiece() {
+		setupPieces--;
+		activePieces++;
+	}
+
+	public int getSetupPieces() {
+		return setupPieces;
+	}
+
+	public int getActivePieces() {
+		return activePieces;
 	}
 }

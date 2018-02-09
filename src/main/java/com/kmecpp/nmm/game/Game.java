@@ -23,6 +23,14 @@ public class Game {
 		return active;
 	}
 
+	public Team getTeam1() {
+		return team1;
+	}
+
+	public Team getTeam2() {
+		return team2;
+	}
+
 	public Team getCurrentTeam() {
 		return turn ? team1 : team2;
 	}
