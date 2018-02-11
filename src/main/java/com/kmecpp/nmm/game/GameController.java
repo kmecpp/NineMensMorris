@@ -27,7 +27,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class GameController implements Initializable {
+public class GameController extends Drawable implements Initializable {
 
 	@FXML
 	private AnchorPane pane;
@@ -35,12 +35,15 @@ public class GameController implements Initializable {
 	@FXML
 	private Canvas canvas;
 
-	private Stage stage;
 	private GraphicsContext gc;
+	protected int strokeWeight = 5;
 
-	private int strokeWeight = 5;
+	private Stage stage;
 
 	private Game game = new Game();
+
+	private GamePiece selectedPiece;
+	//	private int clickOriginX, clickOriginY;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -55,13 +58,17 @@ public class GameController implements Initializable {
 		stage.setMinHeight(500);
 
 		//		//		pane.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
-		pane.setBackground(new Background(new BackgroundImage(Images.GAME_BACKGROUND, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+		//		pane.setBackground(new Background(new BackgroundImage(Images.GAME_BACKGROUND, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+		pane.setBackground(new Background(new BackgroundImage(Images.GAME_BACKGROUND, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+
 		gc = canvas.getGraphicsContext2D();
+		Drawable.setGraphicsContext(canvas.getGraphicsContext2D());
+
 		canvas.widthProperty().bind(stage.widthProperty());
 		canvas.heightProperty().bind(stage.heightProperty());
 		NineMensMorris.getStage().widthProperty().addListener((val, oldVal, newVal) -> drawStage(newVal.intValue(), (int) stage.getHeight()));
 		NineMensMorris.getStage().heightProperty().addListener((val, oldVal, newVal) -> drawStage((int) stage.getWidth(), newVal.intValue()));
-		drawStage((int) stage.getWidth(), (int) stage.getHeight());
+		redraw();
 	}
 
 	private void redraw() {
@@ -104,11 +111,11 @@ public class GameController implements Initializable {
 
 					GamePosition position = game.getPosition(positionId);
 					if (position.isAvailable()) {
-						circle(x, y, Game.POSITION_SIZE);
+						circle(x, y, SceneConstants.POSITION_SIZE);
 						gc.setFill(Color.BLACK);
 					} else {
 						gc.setFill(Color.BLUE);
-						circle(x, y, Game.PIECE_SIZE);
+						circle(x, y, SceneConstants.PIECE_SIZE);
 						gc.setFill(Color.BLACK);
 					}
 
@@ -128,33 +135,92 @@ public class GameController implements Initializable {
 		}
 
 		int textY = (int) (centerY * 0.6);
-		int textSpace = centerX - radii[2];
-		int textCenterLeft = textSpace / 2;
+		int horizontalSpace = centerX - radii[2];
+		int textCenterLeft = horizontalSpace / 2;
 		int textCenterRight = width - textCenterLeft;
 
-		int maxWidth = (int) (textSpace / 1.6);
-		int textSize = textSpace / 10 + 5;
+		int verticalSpace = height - textY;
+		//		;
+		int pieceSpace = (int) (SceneConstants.PIECE_SPACING + SceneConstants.PIECE_SIZE + ((Math.min(verticalSpace, horizontalSpace) - 4 * SceneConstants.PIECE_SIZE) / 10));
+		//		System.out.println(pieceSpace);
+		//		int pieceSpace = SceneConstants.PIECE_SIZE + SceneConstants.PIECE_SPACING;
+		for (Team team : game.getTeams()) {
+			int pieceX = (team.isLeftTeam() ? textCenterLeft : textCenterRight) - pieceSpace;
+			int pieceY = centerY;
+
+			for (int i = 0; i < 9; i++) {
+
+				if (team.hasSetupPiece(i)) {
+					//				team.alignSetupPiece(i, pieceX, pieceY);
+					gc.setFill(team.getColor());
+					team.alignSetupPiece(i, pieceX, pieceY).draw(gc);
+
+					//					Circle piece = new Circle(pieceX, pieceY, SceneConstants.PIECE_SIZE / 2, team.getColor());
+					//					piece.setPickOnBounds(true);
+					//					piece.setOnDragDetected((e) -> {
+					//					});
+					//					piece.setOnMouseDragged((e) -> {
+					//						//						piece.setFill
+					//						Color c = (Color) piece.getFill();
+					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0.5));
+					//						System.out.println((int) e.getX() + ", " + (int) clickOriginX);
+					//
+					//						piece.setCenterX(e.getX());
+					//						piece.setCenterY(e.getY());
+					//					});
+					//					piece.setOnMouseReleased((e) -> {
+					//						Color c = (Color) piece.getFill();
+					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 1));
+					//						System.out.println("HI");
+					//					});
+
+					//					pane.getChildren().add(piece);
+					//					circle(pieceX, pieceY, SceneConstants.PIECE_SIZE);
+					gc.setFill(Color.BLACK);
+				}
+
+				if ((i + 1) % 3 == 0) {
+					pieceY += pieceSpace;
+					pieceX -= 2 * pieceSpace;
+				} else {
+					pieceX += pieceSpace;
+				}
+			}
+			//			for (int id i = textY + 30; i < 10; i++) {
+			//				team.alignSetupPiece(id, x, y);
+			//			}
+		}
+
+		int maxWidth = (int) (horizontalSpace / 1.6);
+		int textSize = horizontalSpace / 10 + 5;
 		gc.setFont(Font.font("Verdana", FontWeight.BLACK, textSize));
 
 		gc.setTextAlign(TextAlignment.CENTER);
 		gc.setTextBaseline(VPos.BOTTOM);
 		gc.setFill(Color.BLACK);
-		gc.fillText("Player One", textCenterLeft, textY, maxWidth);
+		gc.fillText(game.getLeftTeam().getName(), textCenterLeft, textY, maxWidth);
 		hbar(textCenterLeft, textY + 3, maxWidth);
 
-		gc.fillText("Player Two", textCenterRight, textY, maxWidth);
+		gc.fillText(game.getRightTeam().getName(), textCenterRight, textY, maxWidth);
 		hbar(textCenterRight, textY + 3, maxWidth);
 
 		gc.setFill(Color.BLACK);
 	}
-	
+
 	@FXML
 	private void onMouseDragged(MouseEvent e) {
-		
+
 	}
 
 	@FXML
 	private void onMouseClicked(MouseEvent e) {
+		//		clickOriginX = (int) e.getX();
+		//		clickOriginY = (int) e.getY();
+
+		for (GamePiece piece : game.getPieces()) {
+			
+		}
+
 		int x = (int) e.getX();
 		int y = (int) e.getY();
 		GamePosition position = game.getPosition(x, y);
@@ -170,40 +236,6 @@ public class GameController implements Initializable {
 				}
 			}
 		}
-	}
-
-	//	private void strokeWeight(int strokeWeight) {
-	//		this.strokeWeight = strokeWeight;
-	//	}
-
-	private void walls(int x, int y, int size) {
-		int radius = size / 2;
-		int halfStroke = strokeWeight / 2;
-		int xMin = x - radius - halfStroke;
-		int xMax = x + radius - halfStroke;
-		int yMin = y - radius - halfStroke;
-		int yMax = y + radius - halfStroke;
-		gc.fillRect(xMin, yMin, strokeWeight, size); //Left
-		gc.fillRect(xMax, yMin, strokeWeight, size); //Right
-		gc.fillRect(xMin, yMin, size, strokeWeight); //Top
-		gc.fillRect(xMin, yMax, size + strokeWeight, strokeWeight); //Bottom
-	}
-
-	private void hbar(int x, int y, int length) {
-		gc.fillRect(x - length / 2, y, length, strokeWeight);
-	}
-
-	private void vbar(int x, int y, int length) {
-		gc.fillRect(x, y - length / 2, strokeWeight, length);
-	}
-
-	//	private void line(int x1, int y1, int x2, int y2) {
-	//		gc.fill
-	//	}
-
-	private void circle(int x, int y, int size) {
-		int radius = size / 2;
-		gc.fillOval(x - radius, y - radius, size, size);
 	}
 
 }

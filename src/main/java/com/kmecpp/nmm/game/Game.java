@@ -1,11 +1,15 @@
 package com.kmecpp.nmm.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Game {
+import javafx.scene.paint.Color;
 
-	public static final int POSITION_SIZE = 40;
-	public static final int PIECE_SIZE = 50;
+public class Game extends Drawable {
+
+	//	public Game(GraphicsContext gc) {
+	//		super(gc);
+	//	}
 
 	private HashMap<Integer, GamePosition> positions = new HashMap<>();
 
@@ -15,24 +19,34 @@ public class Game {
 	//	private GameState state = GameState.SETUP;
 	private boolean active;
 
-	private Team team1;
-	private Team team2;
+	//	private Team[] teams = new Team[] { new Team("Red", Color.RED, 1), new Team("Blue", Color.BLUE, 2) };
+	private Team leftTeam = new Team("Red", Color.RED, 1);
+	private Team rightTeam = new Team("Blue", Color.BLUE, 2);
 	private boolean turn;
 
 	public boolean isActive() {
 		return active;
 	}
 
-	public Team getTeam1() {
-		return team1;
+	public Team[] getTeams() {
+		return new Team[] { leftTeam, rightTeam };
 	}
 
-	public Team getTeam2() {
-		return team2;
+	public Team getLeftTeam() {
+		return leftTeam;
+	}
+
+	public Team getRightTeam() {
+		return rightTeam;
 	}
 
 	public Team getCurrentTeam() {
-		return turn ? team1 : team2;
+		return turn ? getLeftTeam() : getRightTeam();
+	}
+
+	public ArrayList<GamePiece> getPieces() {
+		//		return teams[0].getP
+		return new ArrayList<>();
 	}
 
 	//	public GamePiece getPiece(int id) {
@@ -66,7 +80,7 @@ public class Game {
 
 	public GamePosition getPosition(int x, int y) {
 		for (GamePosition position : positions.values()) {
-			if (position.distance(x, y) < POSITION_SIZE / 2) {
+			if (position.distance(x, y) < SceneConstants.POSITION_SIZE / 2) {
 				return position;
 			}
 		}
