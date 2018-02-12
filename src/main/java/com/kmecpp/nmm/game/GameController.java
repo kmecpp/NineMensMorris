@@ -108,6 +108,12 @@ public class GameController extends Drawable implements Initializable {
 					int y = centerY + ringSize * j;
 
 					game.setPosition(positionId, x, y);
+					
+					/*
+					 * 1) Wait for init
+					 * 2) Use circle node
+					 * 3) 
+					 */
 
 					GamePosition position = game.getPosition(positionId);
 					if (position.isAvailable()) {
@@ -153,7 +159,7 @@ public class GameController extends Drawable implements Initializable {
 				if (team.hasSetupPiece(i)) {
 					//				team.alignSetupPiece(i, pieceX, pieceY);
 					gc.setFill(team.getColor());
-					team.alignSetupPiece(i, pieceX, pieceY).draw(gc);
+					team.alignSetupPiece(i, pieceX, pieceY).draw();
 
 					//					Circle piece = new Circle(pieceX, pieceY, SceneConstants.PIECE_SIZE / 2, team.getColor());
 					//					piece.setPickOnBounds(true);
@@ -209,16 +215,25 @@ public class GameController extends Drawable implements Initializable {
 
 	@FXML
 	private void onMouseDragged(MouseEvent e) {
-
+		if (selectedPiece != null) {
+			System.out.println("DRAW");
+			selectedPiece.setPosition((int) e.getX(), (int) e.getY());
+			redraw();
+		}
 	}
 
 	@FXML
-	private void onMouseClicked(MouseEvent e) {
+	private void onMousePressed(MouseEvent e) {
 		//		clickOriginX = (int) e.getX();
 		//		clickOriginY = (int) e.getY();
 
-		for (GamePiece piece : game.getPieces()) {
-			
+		if (!game.isActive()) {
+			for (GamePiece piece : game.getCurrentTeam().getSetupPieces()) {
+				if (piece.isClicked(e)) {
+					selectedPiece = piece;
+					break;
+				}
+			}
 		}
 
 		int x = (int) e.getX();

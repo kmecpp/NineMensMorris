@@ -24,7 +24,7 @@ public class NineMensMorris extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
-
+ 
 	@Override
 	public void start(Stage stage) throws IOException {
 		long start = System.currentTimeMillis();

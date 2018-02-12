@@ -1,6 +1,6 @@
 package com.kmecpp.nmm.game;
 
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 
 public class GamePiece extends Drawable {
 
@@ -16,6 +16,10 @@ public class GamePiece extends Drawable {
 		return position;
 	}
 
+	public void setPosition(int x, int y) {
+		position.setCoords(x, y);
+	}
+
 	public void setPosition(GamePosition position) {
 		this.position = position;
 	}
@@ -24,7 +28,11 @@ public class GamePiece extends Drawable {
 		return team;
 	}
 
-	public void draw(GraphicsContext gc) {
+	public boolean isClicked(MouseEvent e) {
+		return position.distance((int) e.getX(), (int) e.getY()) < SceneConstants.PIECE_SIZE;
+	}
+
+	public void draw() {
 		circle(position.getX(), position.getY(), SceneConstants.PIECE_SIZE);
 	}
 

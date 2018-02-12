@@ -22,7 +22,7 @@ public class Game extends Drawable {
 	//	private Team[] teams = new Team[] { new Team("Red", Color.RED, 1), new Team("Blue", Color.BLUE, 2) };
 	private Team leftTeam = new Team("Red", Color.RED, 1);
 	private Team rightTeam = new Team("Blue", Color.BLUE, 2);
-	private boolean turn;
+	private int turns;
 
 	public boolean isActive() {
 		return active;
@@ -41,10 +41,11 @@ public class Game extends Drawable {
 	}
 
 	public Team getCurrentTeam() {
-		return turn ? getLeftTeam() : getRightTeam();
+		return turns % 2 == 0 ? getLeftTeam() : getRightTeam();
 	}
 
-	public ArrayList<GamePiece> getPieces() {
+	public ArrayList<GamePiece> getAllPieces() {
+
 		//		return teams[0].getP
 		return new ArrayList<>();
 	}
