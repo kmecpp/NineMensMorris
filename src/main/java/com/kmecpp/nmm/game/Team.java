@@ -20,7 +20,7 @@ public class Team {
 		this.teamNumber = teamNumber;
 
 		for (int i = 0; i < setupPieces.length; i++) {
-			setupPieces[i] = new GamePiece(new GamePosition(Integer.MAX_VALUE, Integer.MAX_VALUE), this);
+			setupPieces[i] = new GamePiece(new BoardPosition(-1, -1, -1), this);
 		}
 
 		//		teamCount++;
@@ -58,14 +58,23 @@ public class Team {
 		return setupPieces[id] != null;
 	}
 
+	public GamePiece getSetupPiece(int id) {
+		return setupPieces[id];
+	}
+
 	public GamePiece alignSetupPiece(int id, int x, int y) {
 		GamePiece piece = setupPieces[id];
-		if (piece != null) {
-			piece.setPosition(new GamePosition(x, y));
-		} else {
-			piece = setupPieces[id] = new GamePiece(new GamePosition(x, y), this);
-		}
+		piece.alignCoords(x, y);
 		return piece;
+
+		//		GamePiece piece = setupPieces[id];
+		//		if (piece != null) {
+		//			piece.alignCoords(x, y);
+		//			//			piece.setPosition(new BoardPosition(x, y));
+		//		} else {
+		//			piece = setupPieces[id] = new GamePiece(new BoardPosition(x, y), this);
+		//		}
+		//		return piece;
 	}
 
 	public int getActivePieces() {

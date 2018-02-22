@@ -4,25 +4,26 @@ import javafx.scene.input.MouseEvent;
 
 public class GamePiece extends Drawable {
 
-	private GamePosition position;
+	private BoardPosition position;
 	private Team team;
 
-	public GamePiece(GamePosition position, Team team) {
+	public GamePiece(BoardPosition position, Team team) {
 		this.position = position;
 		this.team = team;
 	}
 
-	public GamePosition getPosition() {
+	public BoardPosition getPosition() {
 		return position;
 	}
 
-	public void setPosition(int x, int y) {
+	public GamePiece alignCoords(int x, int y) {
 		position.setCoords(x, y);
+		return this;
 	}
 
-	public void setPosition(GamePosition position) {
-		this.position = position;
-	}
+	//	public void setPosition(BoardPosition position) {
+	//		this.position = position;
+	//	}
 
 	public Team getTeam() {
 		return team;
@@ -30,6 +31,12 @@ public class GamePiece extends Drawable {
 
 	public boolean isClicked(MouseEvent e) {
 		return position.distance((int) e.getX(), (int) e.getY()) < SceneConstants.PIECE_SIZE;
+	}
+
+	public void place() {
+		Game.getInstance().getBoardPosition(position.getX(), position.getY());
+
+		//		Game.getInstance().placePiece(this, positionId);
 	}
 
 	public void draw() {

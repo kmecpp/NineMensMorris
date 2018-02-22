@@ -1,7 +1,6 @@
 package com.kmecpp.nmm.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javafx.scene.paint.Color;
 
@@ -11,7 +10,7 @@ public class Game extends Drawable {
 	//		super(gc);
 	//	}
 
-	private HashMap<Integer, GamePosition> positions = new HashMap<>();
+	private BoardPosition[] boardPositions = new BoardPosition[24];
 
 	//	private HashMap<Integer, GamePiece> ids = new HashMap<>();
 	//	private HashMap<GamePosition, GamePiece> pieces = new HashMap<>();
@@ -23,6 +22,18 @@ public class Game extends Drawable {
 	private Team leftTeam = new Team("Red", Color.RED, 1);
 	private Team rightTeam = new Team("Blue", Color.BLUE, 2);
 	private int turns;
+
+	private static final Game instance = new Game();
+
+	public Game() {
+		if (instance != null) {
+			throw new IllegalStateException("Game already initialized!");
+		}
+	}
+
+	public static Game getInstance() {
+		return instance;
+	}
 
 	public boolean isActive() {
 		return active;
@@ -63,7 +74,7 @@ public class Game extends Drawable {
 	//		//		return pieces.containsKey(id);//pieces.contains(new GamePosition(x, y));
 	//	}
 
-	public void placePiece() {
+	public void placePiece(GamePiece piece, int positionId) {
 
 	}
 
@@ -75,12 +86,12 @@ public class Game extends Drawable {
 		return false;
 	}
 
-	public GamePosition getPosition(int id) {
-		return positions.get(id);
+	public BoardPosition getPosition(int id) {
+		return boardPositions[id];
 	}
 
-	public GamePosition getPosition(int x, int y) {
-		for (GamePosition position : positions.values()) {
+	public BoardPosition getBoardPosition(int x, int y) {
+		for (BoardPosition position : boardPositions) {
 			if (position.distance(x, y) < SceneConstants.POSITION_SIZE / 2) {
 				return position;
 			}
@@ -89,9 +100,9 @@ public class Game extends Drawable {
 	}
 
 	public void setPosition(int id, int x, int y) {
-		GamePosition position = positions.get(id);
+		BoardPosition position = boardPositions[id];
 		if (position == null) {
-			positions.put(id, new GamePosition(x, y));
+			boardPositions[id] = new BoardPosition(id, x, y);
 		} else {
 			position.setCoords(x, y);
 		}

@@ -5,7 +5,6 @@ import java.util.ResourceBundle;
 
 import com.kmecpp.nmm.NineMensMorris;
 import com.kmecpp.nmm.resources.Images;
-import com.kmecpp.nmm.resources.Sound;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,10 +39,13 @@ public class GameController extends Drawable implements Initializable {
 
 	private Stage stage;
 
-	private Game game = new Game();
+	private Game game = Game.getInstance();
 
 	private GamePiece selectedPiece;
-	//	private int clickOriginX, clickOriginY;
+	private int clickOriginX, clickOriginY;
+	private int mouseX, mouseY;
+
+	public static int pieceSize = 60;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -76,6 +78,7 @@ public class GameController extends Drawable implements Initializable {
 	}
 
 	private void drawStage(int width, int height) {
+		//		long start = System.nanoTime();
 		//		pane.resize(width, height - 40);
 		gc.clearRect(0, 0, width, height);
 		gc.rect(0, 0, 1000, 1000);
@@ -108,14 +111,14 @@ public class GameController extends Drawable implements Initializable {
 					int y = centerY + ringSize * j;
 
 					game.setPosition(positionId, x, y);
-					
+
 					/*
 					 * 1) Wait for init
 					 * 2) Use circle node
-					 * 3) 
+					 * 3)
 					 */
 
-					GamePosition position = game.getPosition(positionId);
+					BoardPosition position = game.getPosition(positionId);
 					if (position.isAvailable()) {
 						circle(x, y, SceneConstants.POSITION_SIZE);
 						gc.setFill(Color.BLACK);
@@ -156,10 +159,19 @@ public class GameController extends Drawable implements Initializable {
 
 			for (int i = 0; i < 9; i++) {
 
-				if (team.hasSetupPiece(i)) {
-					//				team.alignSetupPiece(i, pieceX, pieceY);
-					gc.setFill(team.getColor());
-					team.alignSetupPiece(i, pieceX, pieceY).draw();
+				GamePiece setupPiece = team.getSetupPiece(i);
+				if (setupPiece != null) {
+					if (setupPiece == selectedPiece) {
+						Color color = new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5);
+						gc.setFill(color);
+						setupPiece.alignCoords(mouseX, mouseY).draw();
+						//						System.out.println(mouseX + ", " + mouseY);
+						//						team.alignSetupPiece(i, mouseX, mouseY).draw();
+					} else {
+						gc.setFill(team.getColor());
+						setupPiece.alignCoords(pieceX, pieceY).draw();
+						//						team.alignSetupPiece(i, pieceX, pieceY).draw();
+					}
 
 					//					Circle piece = new Circle(pieceX, pieceY, SceneConstants.PIECE_SIZE / 2, team.getColor());
 					//					piece.setPickOnBounds(true);
@@ -211,21 +223,31 @@ public class GameController extends Drawable implements Initializable {
 		hbar(textCenterRight, textY + 3, maxWidth);
 
 		gc.setFill(Color.BLACK);
+		//		long timeTaken = System.nanoTime() - start;
+		//		String percentage = String.valueOf(timeTaken / 6945000D * 100); //6945000 is about the max frame time in nanoseconds for a 144Hz refresh rate
+		//		System.out.println("Time Taken: " + timeTaken + "ns  " + percentage.substring(0, percentage.indexOf(".") + 2) + "%");
 	}
 
 	@FXML
 	private void onMouseDragged(MouseEvent e) {
+		mouseX = (int) e.getX();
+		mouseY = (int) e.getY();
 		if (selectedPiece != null) {
-			System.out.println("DRAW");
-			selectedPiece.setPosition((int) e.getX(), (int) e.getY());
+			selectedPiece.alignCoords((int) e.getX(), (int) e.getY());
 			redraw();
 		}
 	}
 
 	@FXML
+	private void onMouseMoved(MouseEvent e) {
+		mouseX = (int) e.getX();
+		mouseY = (int) e.getY();
+	}
+
+	@FXML
 	private void onMousePressed(MouseEvent e) {
-		//		clickOriginX = (int) e.getX();
-		//		clickOriginY = (int) e.getY();
+		clickOriginX = (int) e.getX();
+		clickOriginY = (int) e.getY();
 
 		if (!game.isActive()) {
 			for (GamePiece piece : game.getCurrentTeam().getSetupPieces()) {
@@ -238,18 +260,25 @@ public class GameController extends Drawable implements Initializable {
 
 		int x = (int) e.getX();
 		int y = (int) e.getY();
-		GamePosition position = game.getPosition(x, y);
+		BoardPosition position = game.getBoardPosition(x, y);
 		if (position != null) {
 			if (game.isActive()) {
 				//Select or move piece
 			} else {
-				if (position.isAvailable()) {
-					position.setPiece(new GamePiece(position, game.getCurrentTeam()));
-					redraw();
-				} else {
-					Sound.ERROR.play();
-				}
+				//				if (position.isAvailable()) {
+				//					position.setPiece(new GamePiece(position, game.getCurrentTeam()));
+				//					redraw();
+				//				} else {
+				//					Sound.ERROR.play();
+				//				}
 			}
+		}
+	}
+
+	@FXML
+	private void onMouseReleased(MouseEvent e) {
+		if (selectedPiece != null) {
+			selectedPiece.place();
 		}
 	}
 

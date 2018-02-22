@@ -1,12 +1,14 @@
 package com.kmecpp.nmm.game;
 
-public class GamePosition {
+public class BoardPosition {
 
+	int id;
 	private int x;
 	private int y;
 	private GamePiece piece;
 
-	public GamePosition(int x, int y) {
+	public BoardPosition(int id, int x, int y) {
+		this.id = id;
 		this.x = x;
 		this.y = y;
 	}
@@ -51,8 +53,8 @@ public class GamePosition {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof GamePosition) {
-			GamePosition pos = (GamePosition) obj;
+		if (obj instanceof BoardPosition) {
+			BoardPosition pos = (BoardPosition) obj;
 			return pos.x == x && pos.y == y;
 		}
 		return false;
