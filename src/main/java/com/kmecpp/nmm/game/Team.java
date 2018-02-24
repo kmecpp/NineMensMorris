@@ -14,13 +14,15 @@ public class Team {
 	private GamePiece[] setupPieces = new GamePiece[9];
 	private int activePieces = 0;
 
+	private GamePiece[] pieces = new GamePiece[9];
+
 	public Team(String name, Color color, int teamNumber) {
 		this.name = name;
 		this.color = color;
 		this.teamNumber = teamNumber;
 
-		for (int i = 0; i < setupPieces.length; i++) {
-			setupPieces[i] = new GamePiece(new BoardPosition(-1, -1, -1), this);
+		for (int i = 0; i < pieces.length; i++) {
+			pieces[i] = new GamePiece(new BoardPosition(-1, -1, -1), this);
 		}
 
 		//		teamCount++;
@@ -29,12 +31,20 @@ public class Team {
 		//		}
 	}
 
+	public GamePiece[] getPieces() {
+		return pieces;
+	}
+
 	public boolean isLeftTeam() {
 		return teamNumber == 1;
 	}
 
 	public boolean isRightTeam() {
 		return teamNumber == 2;
+	}
+
+	public Team getOtherTeam() {
+		return Game.getInstance().getTeams()[teamNumber % 2];
 	}
 
 	public String getName() {

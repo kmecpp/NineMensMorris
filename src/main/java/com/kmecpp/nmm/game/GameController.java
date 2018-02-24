@@ -89,59 +89,7 @@ public class GameController extends Drawable implements Initializable {
 		int space = Math.min(width, height) / 9;
 		int[] radii = new int[] { space, space * 2, space * 3 };
 
-		//Draw connecting lines (should this be before positions are drawn?)
-		int ringRange = radii[1];
-		hbar(centerX - ringRange, centerY, ringRange); //Left
-		hbar(centerX + ringRange, centerY, ringRange); //Right
-		vbar(centerX, centerY - ringRange, ringRange); //Top
-		vbar(centerX, centerY + ringRange, ringRange); //Bottom
-
-		int positionId = 0;
-		for (int r = 0; r < 3; r++) {
-			int ringSize = radii[r];
-
-			walls(centerX, centerY, 2 * ringSize);
-
-			for (int i = -1; i <= 1; i++) {
-				for (int j = -1; j <= 1; j++) {
-					if (i == 0 && j == 0) {
-						continue;
-					}
-					int x = centerX + ringSize * i;
-					int y = centerY + ringSize * j;
-
-					game.setPosition(positionId, x, y);
-
-					/*
-					 * 1) Wait for init
-					 * 2) Use circle node
-					 * 3)
-					 */
-
-					BoardPosition position = game.getPosition(positionId);
-					if (position.isAvailable()) {
-						circle(x, y, SceneConstants.POSITION_SIZE);
-						gc.setFill(Color.BLACK);
-					} else {
-						gc.setFill(Color.BLUE);
-						circle(x, y, SceneConstants.PIECE_SIZE);
-						gc.setFill(Color.BLACK);
-					}
-
-					positionId++;
-				}
-			}
-
-			//			System.out.println(spacing);
-			//			gc.rect(centerX - 2 * spacing, centerY, 2 * spacing, strokeWeight);
-
-			//			gc.setTextAlign(TextAlignment.CENTER);
-			//			gc.setTextBaseline(VPos.CENTER);
-			//			gc.setFill(Color.RED);
-			//			gc.setFont(Font.font("Verdana", FontWeight.BLACK, 500));
-			//			gc.fillText("DON'T BE A DINGUS", centerX, centerY, 1800);
-			//			gc.setFill(Color.BLACK);
-		}
+		game.getBoard().draw(centerX, centerY, radii, space);
 
 		int textY = (int) (centerY * 0.6);
 		int horizontalSpace = centerX - radii[2];
@@ -157,44 +105,29 @@ public class GameController extends Drawable implements Initializable {
 			int pieceX = (team.isLeftTeam() ? textCenterLeft : textCenterRight) - pieceSpace;
 			int pieceY = centerY;
 
-			for (int i = 0; i < 9; i++) {
+			GamePiece[] pieces = team.getPieces();
+			for (int i = 0; i < pieces.length; i++) {
+				GamePiece piece = pieces[i];
 
-				GamePiece setupPiece = team.getSetupPiece(i);
-				if (setupPiece != null) {
-					if (setupPiece == selectedPiece) {
-						Color color = new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5);
-						gc.setFill(color);
-						setupPiece.alignCoords(mouseX, mouseY).draw();
-						//						System.out.println(mouseX + ", " + mouseY);
-						//						team.alignSetupPiece(i, mouseX, mouseY).draw();
-					} else {
-						gc.setFill(team.getColor());
-						setupPiece.alignCoords(pieceX, pieceY).draw();
-						//						team.alignSetupPiece(i, pieceX, pieceY).draw();
+				if (piece != null) {
+
+					if (piece == selectedPiece) {
+						piece.alignCoords(mouseX, mouseY);
+					} else if (!piece.isPlaced()) {
+						piece.alignCoords(pieceX, pieceY);
 					}
 
-					//					Circle piece = new Circle(pieceX, pieceY, SceneConstants.PIECE_SIZE / 2, team.getColor());
-					//					piece.setPickOnBounds(true);
-					//					piece.setOnDragDetected((e) -> {
-					//					});
-					//					piece.setOnMouseDragged((e) -> {
-					//						//						piece.setFill
-					//						Color c = (Color) piece.getFill();
-					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0.5));
-					//						System.out.println((int) e.getX() + ", " + (int) clickOriginX);
-					//
-					//						piece.setCenterX(e.getX());
-					//						piece.setCenterY(e.getY());
-					//					});
-					//					piece.setOnMouseReleased((e) -> {
-					//						Color c = (Color) piece.getFill();
-					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 1));
-					//						System.out.println("HI");
-					//					});
+					piece.draw();
 
-					//					pane.getChildren().add(piece);
-					//					circle(pieceX, pieceY, SceneConstants.PIECE_SIZE);
-					gc.setFill(Color.BLACK);
+					//					if (piece == selectedPiece) {
+					//						Color color = new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5);
+					//						gc.setFill(color);
+					//						piece.alignCoords(mouseX, mouseY).draw();
+					//					} else {
+					//						gc.setFill(team.getColor());
+					//						piece.alignCoords(pieceX, pieceY).draw();
+					//					}
+					//					gc.setFill(Color.BLACK);
 				}
 
 				if ((i + 1) % 3 == 0) {
@@ -204,9 +137,56 @@ public class GameController extends Drawable implements Initializable {
 					pieceX += pieceSpace;
 				}
 			}
-			//			for (int id i = textY + 30; i < 10; i++) {
-			//				team.alignSetupPiece(id, x, y);
+
+			//			for (int i = 0; i < 9; i++) {
+			//				GamePiece setupPiece = team.getSetupPiece(i);
+			//				if (setupPiece != null) {
+			//					if (setupPiece == selectedPiece) {
+			//						Color color = new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5);
+			//						gc.setFill(color);
+			//						setupPiece.alignCoords(mouseX, mouseY).draw();
+			//						//						System.out.println(mouseX + ", " + mouseY);
+			//						//						team.alignSetupPiece(i, mouseX, mouseY).draw();
+			//					} else {
+			//						gc.setFill(team.getColor());
+			//						setupPiece.alignCoords(pieceX, pieceY).draw();
+			//						//						team.alignSetupPiece(i, pieceX, pieceY).draw();
+			//					}
+			//
+			//					//					Circle piece = new Circle(pieceX, pieceY, SceneConstants.PIECE_SIZE / 2, team.getColor());
+			//					//					piece.setPickOnBounds(true);
+			//					//					piece.setOnDragDetected((e) -> {
+			//					//					});
+			//					//					piece.setOnMouseDragged((e) -> {
+			//					//						//						piece.setFill
+			//					//						Color c = (Color) piece.getFill();
+			//					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0.5));
+			//					//						System.out.println((int) e.getX() + ", " + (int) clickOriginX);
+			//					//
+			//					//						piece.setCenterX(e.getX());
+			//					//						piece.setCenterY(e.getY());
+			//					//					});
+			//					//					piece.setOnMouseReleased((e) -> {
+			//					//						Color c = (Color) piece.getFill();
+			//					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 1));
+			//					//						System.out.println("HI");
+			//					//					});
+			//
+			//					//					pane.getChildren().add(piece);
+			//					//					circle(pieceX, pieceY, SceneConstants.PIECE_SIZE);
+			//					gc.setFill(Color.BLACK);
+			//				}
+			//
+			//				if ((i + 1) % 3 == 0) {
+			//					pieceY += pieceSpace;
+			//					pieceX -= 2 * pieceSpace;
+			//				} else {
+			//					pieceX += pieceSpace;
+			//				}
 			//			}
+			//			//			for (int id i = textY + 30; i < 10; i++) {
+			//			//				team.alignSetupPiece(id, x, y);
+			//			//			}
 		}
 
 		int maxWidth = (int) (horizontalSpace / 1.6);
@@ -250,36 +230,49 @@ public class GameController extends Drawable implements Initializable {
 		clickOriginY = (int) e.getY();
 
 		if (!game.isActive()) {
-			for (GamePiece piece : game.getCurrentTeam().getSetupPieces()) {
+			for (GamePiece piece : game.getCurrentTeam().getPieces()) {
+				if (piece.isPlaced()) {
+					continue;
+				}
 				if (piece.isClicked(e)) {
+					piece.setSelected(true);
 					selectedPiece = piece;
+					//					System.out.println(game.getCurrentTeam().getName());
+					//					selectedPiece = piece;
 					break;
 				}
 			}
 		}
 
-		int x = (int) e.getX();
-		int y = (int) e.getY();
-		BoardPosition position = game.getBoardPosition(x, y);
-		if (position != null) {
-			if (game.isActive()) {
-				//Select or move piece
-			} else {
-				//				if (position.isAvailable()) {
-				//					position.setPiece(new GamePiece(position, game.getCurrentTeam()));
-				//					redraw();
-				//				} else {
-				//					Sound.ERROR.play();
-				//				}
-			}
-		}
+		//		int x = (int) e.getX();
+		//		int y = (int) e.getY();
+		//		BoardPosition position = game.getBoardPosition(x, y);
+		//		if (position != null) {
+		//			if (game.isActive()) {
+		//				//Select or move piece
+		//			} else {
+		//				//				if (position.isAvailable()) {
+		//				//					position.setPiece(new GamePiece(position, game.getCurrentTeam()));
+		//				//					redraw();
+		//				//				} else {
+		//				//					Sound.ERROR.play();
+		//				//				}
+		//			}
+		//		}
 	}
 
 	@FXML
 	private void onMouseReleased(MouseEvent e) {
 		if (selectedPiece != null) {
-			selectedPiece.place();
+			if (selectedPiece.place()) {
+				game.endTurn();
+			} else {
+				selectedPiece.getPosition().setCoords(clickOriginX, clickOriginY);
+			}
+			selectedPiece.setSelected(false);
+			selectedPiece = null;
 		}
+		redraw();
 	}
 
 }

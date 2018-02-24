@@ -1,6 +1,6 @@
 package com.kmecpp.nmm.resources;
 
-import com.kmecpp.jlib.utils.IOUtil;
+import com.kmecpp.nmm.Files;
 import com.kmecpp.nmm.NineMensMorris;
 
 public enum Message {
@@ -13,7 +13,7 @@ public enum Message {
 	static {
 		for (Message sound : values()) {
 			try {
-				sound.text = IOUtil.readString(NineMensMorris.getResource("messages/" + sound.getFileName()));
+				sound.text = Files.read(NineMensMorris.getResource("messages/" + sound.getFileName()));
 			} catch (Exception e) {
 				System.err.println("Could not load message: " + sound.getFileName() + "  (" + e.getMessage() + ")");
 				//				e.printStackTrace();

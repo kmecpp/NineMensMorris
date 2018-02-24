@@ -2,10 +2,9 @@ package com.kmecpp.nmm.game;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public class Drawable {
+public abstract class Drawable {
 
 	protected static GraphicsContext gc;
-
 	protected int strokeWeight = 5;
 
 	//	public Drawable(GraphicsContext gc) {
@@ -49,5 +48,7 @@ public class Drawable {
 		int radius = size / 2;
 		gc.fillOval(x - radius, y - radius, size, size);
 	}
+
+	//	protected abstract void draw();
 
 }

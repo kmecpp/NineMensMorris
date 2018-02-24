@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 
-public class Game extends Drawable {
+public class Game {
 
 	//	public Game(GraphicsContext gc) {
 	//		super(gc);
 	//	}
 
-	private BoardPosition[] boardPositions = new BoardPosition[24];
+	//	private BoardPosition[] boardPositions = new BoardPosition[24];
+	private GameBoard board = new GameBoard(this);
 
 	//	private HashMap<Integer, GamePiece> ids = new HashMap<>();
 	//	private HashMap<GamePosition, GamePiece> pieces = new HashMap<>();
@@ -33,6 +34,14 @@ public class Game extends Drawable {
 
 	public static Game getInstance() {
 		return instance;
+	}
+
+	public GameBoard getBoard() {
+		return board;
+	}
+
+	public void endTurn() {
+		turns++;
 	}
 
 	public boolean isActive() {
@@ -86,23 +95,16 @@ public class Game extends Drawable {
 		return false;
 	}
 
+	
+	//TODO: REMOVE GET POSITION AND SET POSITION
 	public BoardPosition getPosition(int id) {
-		return boardPositions[id];
-	}
-
-	public BoardPosition getBoardPosition(int x, int y) {
-		for (BoardPosition position : boardPositions) {
-			if (position.distance(x, y) < SceneConstants.POSITION_SIZE / 2) {
-				return position;
-			}
-		}
-		return null;
+		return board.positions[id];
 	}
 
 	public void setPosition(int id, int x, int y) {
-		BoardPosition position = boardPositions[id];
+		BoardPosition position = board.positions[id];
 		if (position == null) {
-			boardPositions[id] = new BoardPosition(id, x, y);
+			board.positions[id] = new BoardPosition(id, x, y);
 		} else {
 			position.setCoords(x, y);
 		}
