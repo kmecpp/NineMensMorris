@@ -1,7 +1,5 @@
 package com.kmecpp.nmm.game;
 
-import javafx.scene.paint.Color;
-
 public class BoardPosition extends Drawable {
 
 	int id;
@@ -76,7 +74,13 @@ public class BoardPosition extends Drawable {
 
 	public void draw() {
 		circle(x, y, SceneConstants.POSITION_SIZE);
-		gc.setFill(Color.BLACK);
+
+		//		gc.setFont(Font.font("Verdana", FontWeight.BLACK, 12));
+		//		gc.setTextAlign(TextAlignment.CENTER);
+		//		gc.setTextBaseline(VPos.CENTER);
+		//		gc.setFill(Color.WHITE);
+		//		gc.fillText(String.valueOf(id), x, y, SceneConstants.POSITION_SIZE);
+		//		gc.setFill(Color.BLACK);
 	}
 
 }

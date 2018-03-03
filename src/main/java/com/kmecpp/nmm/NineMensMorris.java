@@ -5,7 +5,6 @@ import java.net.URL;
 
 import com.kmecpp.nmm.resources.GameView;
 import com.kmecpp.nmm.resources.Images;
-import com.kmecpp.nmm.resources.MusicPlayer;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -24,7 +23,7 @@ public class NineMensMorris extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
- 
+
 	@Override
 	public void start(Stage stage) throws IOException {
 		long start = System.currentTimeMillis();
@@ -36,7 +35,7 @@ public class NineMensMorris extends Application {
 		//		setPage(Page.HOME);
 		stage.show();
 
-		new MusicPlayer().shufflePlay();
+		//		new MusicPlayer().shufflePlay();
 		System.out.println("Application started in " + (System.currentTimeMillis() - start) + "ms");
 	}
 

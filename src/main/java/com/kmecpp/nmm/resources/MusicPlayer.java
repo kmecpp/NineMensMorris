@@ -29,7 +29,7 @@ public class MusicPlayer {
 		player.setVolume(0.2);
 
 		player.setOnEndOfMedia(() -> playNext());
-		//		player.play();
+		player.play();
 	}
 
 	public void shufflePlay() {

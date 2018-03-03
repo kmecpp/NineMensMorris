@@ -9,9 +9,11 @@ import javafx.scene.media.MediaPlayer;
 
 public enum Sound {
 
-	BUTTON_CLICK,
+	MILL2,
 	PLACE,
+	CAPTURE,
 	ERROR,
+	BUTTON_CLICK,
 
 	;
 

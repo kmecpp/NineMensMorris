@@ -14,6 +14,8 @@ public class GamePiece extends Drawable {
 	private boolean placed;
 	private boolean selected;
 
+	private int originalX, originalY;
+
 	public GamePiece(BoardPosition position, Team team) {
 		this.position = position;
 		this.team = team;
@@ -41,7 +43,7 @@ public class GamePiece extends Drawable {
 	}
 
 	public boolean isClicked(MouseEvent e) {
-		return position.distance((int) e.getX(), (int) e.getY()) < SceneConstants.PIECE_SIZE;
+		return position.distance((int) e.getX(), (int) e.getY()) < SceneConstants.PIECE_SIZE / 2;
 	}
 
 	//	public static GamePiece getSelectedPiece() {
@@ -56,31 +58,45 @@ public class GamePiece extends Drawable {
 	//		selectedPiece = this;
 	//	}
 
-	public boolean place() {
+	public void select() {
+		originalX = position.getX();
+		originalY = position.getY();
+	}
+
+	public void place() {
 		BoardPosition boardPosition = Game.getInstance().getBoard().getPosition(position.getX(), position.getY());
 		if (boardPosition != null) {
 			this.position = boardPosition;
 			boardPosition.setPiece(this);
 			this.placed = true;
-			Sound.PLACE.play();
 
 			if (boardPosition.isMill()) {
+				Sound.MILL2.play();
+				Game.getInstance().setState(GameState.REMOVE);
 				System.out.println("MILL!");
 				//TODO: MILL
+			} else {
+				Sound.PLACE.play();
 			}
 
-			return true;
+			if (team.getOtherTeam().getPiecesLeft() <= 3) {
+
+			}
+
+			Game.getInstance().endTurn();
 		}
-		return false;
+		position.setCoords(originalX, originalY);
+
 		//		Game.getInstance().placePiece(this, positionId);
 	}
 
-	public void setSelected(boolean selected) {
-		this.selected = selected;
+	public void remove() {
+		team.removePiece(this);
+		Sound.CAPTURE.play();
 	}
 
 	public void draw() {
-		gc.setFill(selected ? new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5) : team.getColor());
+		gc.setFill(selected ? new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.4) : team.getColor());
 		circle(position.getX(), position.getY(), SceneConstants.PIECE_SIZE);
 		gc.setFill(Color.BLACK);
 		//		circle(position.getX(), position.getY(), SceneConstants.PIECE_SIZE);

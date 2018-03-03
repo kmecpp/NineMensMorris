@@ -11,30 +11,38 @@ public class Game {
 	//	}
 
 	//	private BoardPosition[] boardPositions = new BoardPosition[24];
-	private GameBoard board = new GameBoard(this);
+	private GameBoard board = new GameBoard();//new GameBoard(this);
 
 	//	private HashMap<Integer, GamePiece> ids = new HashMap<>();
 	//	private HashMap<GamePosition, GamePiece> pieces = new HashMap<>();
 
 	//	private GameState state = GameState.SETUP;
-	private boolean active;
+	//	private boolean active;
 
 	//	private Team[] teams = new Team[] { new Team("Red", Color.RED, 1), new Team("Blue", Color.BLUE, 2) };
+	private GameState state = GameState.SETUP;
 	private Team leftTeam = new Team("Red", Color.RED, 1);
 	private Team rightTeam = new Team("Blue", Color.BLUE, 2);
 	private int turns;
 
-	private static final Game instance = new Game();
+	private static Game instance;
+	//	private GameController controller;
 
 	public Game() {
-		if (instance != null) {
-			throw new IllegalStateException("Game already initialized!");
-		}
+		//		this.controller = controller;
+		instance = this;
+		//		if (instance != null) {
+		//			throw new IllegalStateException("Game already initialized!");
+		//		}
 	}
 
 	public static Game getInstance() {
 		return instance;
 	}
+
+	//	public static GameController getController() {
+	//		return instance.controller;
+	//	}
 
 	public GameBoard getBoard() {
 		return board;
@@ -44,8 +52,12 @@ public class Game {
 		turns++;
 	}
 
-	public boolean isActive() {
-		return active;
+	public GameState getState() {
+		return state;
+	}
+
+	public void setState(GameState state) {
+		this.state = state;
 	}
 
 	public Team[] getTeams() {
@@ -58,6 +70,10 @@ public class Game {
 
 	public Team getRightTeam() {
 		return rightTeam;
+	}
+
+	public boolean isLeftTurn() {
+		return turns % 2 == 0;
 	}
 
 	public Team getCurrentTeam() {
@@ -93,23 +109,6 @@ public class Game {
 
 	public boolean getPiece(int x, int y) {
 		return false;
-	}
-
-	
-	//TODO: REMOVE GET POSITION AND SET POSITION
-	public BoardPosition getPosition(int id) {
-		return board.positions[id];
-	}
-
-	public void setPosition(int id, int x, int y) {
-		BoardPosition position = board.positions[id];
-		if (position == null) {
-			board.positions[id] = new BoardPosition(id, x, y);
-		} else {
-			position.setCoords(x, y);
-		}
-		//		GamePiece piece = new GamePiece(x, y);
-		//		pieces.put(new GamePosition(x, y), new GamePiece(x, y))
 	}
 
 	//	public void reset() {

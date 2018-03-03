@@ -1,6 +1,7 @@
 package com.kmecpp.nmm.game;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import com.kmecpp.nmm.NineMensMorris;
@@ -39,10 +40,9 @@ public class GameController extends Drawable implements Initializable {
 
 	private Stage stage;
 
-	private Game game = Game.getInstance();
+	private Game game = new Game();
 
 	private GamePiece selectedPiece;
-	private int clickOriginX, clickOriginY;
 	private int mouseX, mouseY;
 
 	public static int pieceSize = 60;
@@ -68,18 +68,25 @@ public class GameController extends Drawable implements Initializable {
 
 		canvas.widthProperty().bind(stage.widthProperty());
 		canvas.heightProperty().bind(stage.heightProperty());
-		NineMensMorris.getStage().widthProperty().addListener((val, oldVal, newVal) -> drawStage(newVal.intValue(), (int) stage.getHeight()));
-		NineMensMorris.getStage().heightProperty().addListener((val, oldVal, newVal) -> drawStage((int) stage.getWidth(), newVal.intValue()));
-		redraw();
+		NineMensMorris.getStage().widthProperty().addListener((val, oldVal, newVal) -> refresh());
+		NineMensMorris.getStage().heightProperty().addListener((val, oldVal, newVal) -> refresh());
+		refresh();
 	}
 
-	private void redraw() {
+	public void refresh() {
 		drawStage((int) stage.getWidth(), (int) stage.getHeight());
 	}
 
 	private void drawStage(int width, int height) {
 		//		long start = System.nanoTime();
-		//		pane.resize(width, height - 40);
+
+		//TODO: This is a hack. Weird stage bug makes the width 1938 when the window is maximized when the window size is only 1920. 
+		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+		if (stage.isMaximized()) {
+			width = (int) bounds.getWidth();
+			height = (int) bounds.getHeight();
+		}
+
 		gc.clearRect(0, 0, width, height);
 		gc.rect(0, 0, 1000, 1000);
 
@@ -105,30 +112,17 @@ public class GameController extends Drawable implements Initializable {
 			int pieceX = (team.isLeftTeam() ? textCenterLeft : textCenterRight) - pieceSpace;
 			int pieceY = centerY;
 
-			GamePiece[] pieces = team.getPieces();
-			for (int i = 0; i < pieces.length; i++) {
-				GamePiece piece = pieces[i];
+			ArrayList<GamePiece> pieces = team.getPieces();
+			for (int i = 0; i < pieces.size(); i++) {
+				GamePiece piece = pieces.get(i);
 
-				if (piece != null) {
-
-					if (piece == selectedPiece) {
-						piece.alignCoords(mouseX, mouseY);
-					} else if (!piece.isPlaced()) {
-						piece.alignCoords(pieceX, pieceY);
-					}
-
-					piece.draw();
-
-					//					if (piece == selectedPiece) {
-					//						Color color = new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5);
-					//						gc.setFill(color);
-					//						piece.alignCoords(mouseX, mouseY).draw();
-					//					} else {
-					//						gc.setFill(team.getColor());
-					//						piece.alignCoords(pieceX, pieceY).draw();
-					//					}
-					//					gc.setFill(Color.BLACK);
+				if (piece == selectedPiece) {
+					piece.alignCoords(mouseX, mouseY);
+				} else if (!piece.isPlaced()) {
+					piece.alignCoords(pieceX, pieceY);
 				}
+
+				piece.draw();
 
 				if ((i + 1) % 3 == 0) {
 					pieceY += pieceSpace;
@@ -137,56 +131,6 @@ public class GameController extends Drawable implements Initializable {
 					pieceX += pieceSpace;
 				}
 			}
-
-			//			for (int i = 0; i < 9; i++) {
-			//				GamePiece setupPiece = team.getSetupPiece(i);
-			//				if (setupPiece != null) {
-			//					if (setupPiece == selectedPiece) {
-			//						Color color = new Color(team.getColor().getRed(), team.getColor().getGreen(), team.getColor().getBlue(), 0.5);
-			//						gc.setFill(color);
-			//						setupPiece.alignCoords(mouseX, mouseY).draw();
-			//						//						System.out.println(mouseX + ", " + mouseY);
-			//						//						team.alignSetupPiece(i, mouseX, mouseY).draw();
-			//					} else {
-			//						gc.setFill(team.getColor());
-			//						setupPiece.alignCoords(pieceX, pieceY).draw();
-			//						//						team.alignSetupPiece(i, pieceX, pieceY).draw();
-			//					}
-			//
-			//					//					Circle piece = new Circle(pieceX, pieceY, SceneConstants.PIECE_SIZE / 2, team.getColor());
-			//					//					piece.setPickOnBounds(true);
-			//					//					piece.setOnDragDetected((e) -> {
-			//					//					});
-			//					//					piece.setOnMouseDragged((e) -> {
-			//					//						//						piece.setFill
-			//					//						Color c = (Color) piece.getFill();
-			//					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0.5));
-			//					//						System.out.println((int) e.getX() + ", " + (int) clickOriginX);
-			//					//
-			//					//						piece.setCenterX(e.getX());
-			//					//						piece.setCenterY(e.getY());
-			//					//					});
-			//					//					piece.setOnMouseReleased((e) -> {
-			//					//						Color c = (Color) piece.getFill();
-			//					//						piece.setFill(new Color(c.getRed(), c.getGreen(), c.getBlue(), 1));
-			//					//						System.out.println("HI");
-			//					//					});
-			//
-			//					//					pane.getChildren().add(piece);
-			//					//					circle(pieceX, pieceY, SceneConstants.PIECE_SIZE);
-			//					gc.setFill(Color.BLACK);
-			//				}
-			//
-			//				if ((i + 1) % 3 == 0) {
-			//					pieceY += pieceSpace;
-			//					pieceX -= 2 * pieceSpace;
-			//				} else {
-			//					pieceX += pieceSpace;
-			//				}
-			//			}
-			//			//			for (int id i = textY + 30; i < 10; i++) {
-			//			//				team.alignSetupPiece(id, x, y);
-			//			//			}
 		}
 
 		int maxWidth = (int) (horizontalSpace / 1.6);
@@ -202,7 +146,11 @@ public class GameController extends Drawable implements Initializable {
 		gc.fillText(game.getRightTeam().getName(), textCenterRight, textY, maxWidth);
 		hbar(textCenterRight, textY + 3, maxWidth);
 
+		gc.setFill(Color.rgb(0, 230, 0));
+		int barWidth = 40;
+		gc.fillRect(game.isLeftTurn() ? 0 : (width - barWidth), 0, barWidth, height);
 		gc.setFill(Color.BLACK);
+
 		//		long timeTaken = System.nanoTime() - start;
 		//		String percentage = String.valueOf(timeTaken / 6945000D * 100); //6945000 is about the max frame time in nanoseconds for a 144Hz refresh rate
 		//		System.out.println("Time Taken: " + timeTaken + "ns  " + percentage.substring(0, percentage.indexOf(".") + 2) + "%");
@@ -214,7 +162,7 @@ public class GameController extends Drawable implements Initializable {
 		mouseY = (int) e.getY();
 		if (selectedPiece != null) {
 			selectedPiece.alignCoords((int) e.getX(), (int) e.getY());
-			redraw();
+			refresh();
 		}
 	}
 
@@ -226,21 +174,20 @@ public class GameController extends Drawable implements Initializable {
 
 	@FXML
 	private void onMousePressed(MouseEvent e) {
-		clickOriginX = (int) e.getX();
-		clickOriginY = (int) e.getY();
-
-		if (!game.isActive()) {
-			for (GamePiece piece : game.getCurrentTeam().getPieces()) {
-				if (piece.isPlaced()) {
-					continue;
-				}
-				if (piece.isClicked(e)) {
-					piece.setSelected(true);
+		for (GamePiece piece : game.getCurrentTeam().getPieces()) {
+			if (!game.getState().isBoardInteractable() && piece.isPlaced()) {
+				continue;
+			}
+			if (piece.isClicked(e)) {
+				if (game.getState() == GameState.REMOVE) {
+					piece.remove();
+				} else {
+					piece.select();
 					selectedPiece = piece;
-					//					System.out.println(game.getCurrentTeam().getName());
-					//					selectedPiece = piece;
-					break;
 				}
+				//					System.out.println(game.getCurrentTeam().getName());
+				//					selectedPiece = piece;
+				break;
 			}
 		}
 
@@ -264,15 +211,10 @@ public class GameController extends Drawable implements Initializable {
 	@FXML
 	private void onMouseReleased(MouseEvent e) {
 		if (selectedPiece != null) {
-			if (selectedPiece.place()) {
-				game.endTurn();
-			} else {
-				selectedPiece.getPosition().setCoords(clickOriginX, clickOriginY);
-			}
-			selectedPiece.setSelected(false);
+			selectedPiece.place();
 			selectedPiece = null;
 		}
-		redraw();
+		refresh();
 	}
 
 }

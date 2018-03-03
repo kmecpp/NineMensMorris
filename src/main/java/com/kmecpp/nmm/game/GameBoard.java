@@ -3,9 +3,11 @@ package com.kmecpp.nmm.game;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.scene.paint.Color;
+
 public class GameBoard extends Drawable {
 
-	private Game game;
+	//	private Game game;
 	public BoardPosition[] positions = new BoardPosition[24];
 
 	private static final int[][] MILLS = {
@@ -34,27 +36,41 @@ public class GameBoard extends Drawable {
 			{ 4, 12, 20 },
 	};
 
-	private static final HashMap<Integer, ArrayList<Integer[]>> idMap = new HashMap<>();
+	private static final HashMap<Integer, ArrayList<Integer[]>> millMap = new HashMap<>();
+	private static final HashMap<Integer, ArrayList<Integer>> adjacencyMap = new HashMap<>();
 
+	//Initialize board
 	static {
+		//		long start = System.nanoTime();
 		for (int i = 0; i < MILLS.length; i++) {
 			int[] mill = MILLS[i];
-			for (int j = 0; j < mill.length; j++) {
-				int id = mill[j];
-				ArrayList<Integer[]> mills = idMap.getOrDefault(id, new ArrayList<>());
-				mills.add(new Integer[] { mill[(j + 1) % mill.length], mill[(j + 2) % mill.length] });
-				idMap.put(id, mills);
+
+			for (int idIndex = 0; idIndex < mill.length; idIndex++) {
+				int id = mill[idIndex];
+				ArrayList<Integer[]> mills = millMap.getOrDefault(id, new ArrayList<>());
+				mills.add(new Integer[] { mill[(idIndex + 1) % mill.length], mill[(idIndex + 2) % mill.length] });
+				millMap.put(id, mills);
+
+				ArrayList<Integer> adjacencies = adjacencyMap.getOrDefault(id, new ArrayList<>());
+				if (idIndex == 1) {
+					adjacencies.add(mill[0]);
+					adjacencies.add(mill[2]);
+				} else {
+					adjacencies.add(mill[1]);
+				}
+				adjacencyMap.put(id, adjacencies);
 			}
 		}
+		//		System.out.println("Initialization Time: " + ((System.nanoTime() - start) / 1000000F) + "ms");
 	}
 
-	public GameBoard(Game game) {
-		this.game = game;
-	}
+	//	public GameBoard(Game game) {
+	//		this.game = game;
+	//	}
 
 	public BoardPosition getPosition(int x, int y) {
 		for (BoardPosition position : positions) {
-			if (position.distance(x, y) < SceneConstants.POSITION_SIZE) {
+			if (position.distance(x, y) < SceneConstants.POSITION_SIZE * 1.2) {
 				return position;
 			}
 		}
@@ -71,7 +87,7 @@ public class GameBoard extends Drawable {
 
 	public boolean isMill(BoardPosition position) {
 		Team team = position.getPiece().getTeam();
-		millSearch: for (Integer[] mill : idMap.get(position.getId())) {
+		millSearch: for (Integer[] mill : millMap.get(position.getId())) {
 			for (int i : mill) {
 				if (!isHeldBy(i, team)) {
 					continue millSearch;
@@ -86,6 +102,7 @@ public class GameBoard extends Drawable {
 		//Draw connecting lines (should this be before positions are drawn?)
 		int ringRange = radii[1];
 
+		gc.setFill(Color.BLACK);
 		hbar(centerX - ringRange, centerY, ringRange); //Left
 		hbar(centerX + ringRange, centerY, ringRange); //Right
 		vbar(centerX, centerY - ringRange, ringRange); //Top
@@ -97,24 +114,27 @@ public class GameBoard extends Drawable {
 
 			walls(centerX, centerY, 2 * ringSize);
 
-			for (int i = -1; i <= 1; i++) {
-				for (int j = -1; j <= 1; j++) {
-					if (i == 0 && j == 0) {
+			for (int yPos = -1; yPos <= 1; yPos++) {
+				for (int xPos = -1; xPos <= 1; xPos++) {
+					if (yPos == 0 && xPos == 0) {
 						continue;
 					}
-					int x = centerX + ringSize * i;
-					int y = centerY + ringSize * j;
+					int x = centerX + ringSize * xPos;
+					int y = centerY + ringSize * yPos;
 
-					game.setPosition(positionId, x, y);
-
+					BoardPosition position = positions[positionId];
+					if (position == null) {
+						positions[positionId] = new BoardPosition(positionId, x, y);
+					} else {
+						position.setCoords(x, y);
+					}
 					/*
 					 * 1) Wait for init
 					 * 2) Use circle node
 					 * 3)
 					 */
 
-					BoardPosition position = game.getPosition(positionId);
-					position.draw();
+					positions[positionId].draw();
 
 					positionId++;
 				}

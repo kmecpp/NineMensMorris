@@ -19,6 +19,10 @@ public abstract class Drawable {
 		this.strokeWeight = strokeWeight;
 	}
 
+	public void rectCenter(int x, int y, int width, int height) {
+		gc.fillRect(x - width / 2, y - height / 2, width, height);
+	}
+
 	public void walls(int x, int y, int size) {
 		int radius = size / 2;
 		int halfStroke = strokeWeight / 2;
