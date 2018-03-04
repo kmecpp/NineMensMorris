@@ -7,8 +7,6 @@ import javafx.scene.paint.Color;
 
 public class GamePiece extends Drawable {
 
-	//	private static GamePiece selectedPiece;
-
 	private BoardPosition position;
 	private Team team;
 	private boolean placed;
@@ -16,9 +14,16 @@ public class GamePiece extends Drawable {
 
 	private int originalX, originalY;
 
+	private int id;
+	private static int count;
+
+	//	private static GamePiece selectedPiece;
+
 	public GamePiece(BoardPosition position, Team team) {
 		this.position = position;
 		this.team = team;
+
+		id = count++;
 	}
 
 	public BoardPosition getPosition() {
@@ -30,13 +35,17 @@ public class GamePiece extends Drawable {
 		return this;
 	}
 
+	//	public static GamePiece getSelectedPiece() {
+	//		return selectedPiece;
+	//	}
+	//
+	//	public boolean isSelected() {
+	//		return selected;
+	//	}
+
 	public boolean isPlaced() {
 		return placed;
 	}
-
-	//	public void setPosition(BoardPosition position) {
-	//		this.position = position;
-	//	}
 
 	public Team getTeam() {
 		return team;
@@ -59,6 +68,7 @@ public class GamePiece extends Drawable {
 	//	}
 
 	public void select() {
+		selected = true;
 		originalX = position.getX();
 		originalY = position.getY();
 	}
@@ -74,24 +84,25 @@ public class GamePiece extends Drawable {
 				Sound.MILL2.play();
 				Game.getInstance().setState(GameState.REMOVE);
 				System.out.println("MILL!");
-				//TODO: MILL
+
+				if (team.getOtherTeam().getPiecesLeft() == 3) {
+					System.out.println("GAME OVER!");
+				}
 			} else {
 				Sound.PLACE.play();
+				Game.getInstance().endTurn();
 			}
 
-			if (team.getOtherTeam().getPiecesLeft() <= 3) {
-
-			}
-
-			Game.getInstance().endTurn();
+		} else {
+			position.setCoords(originalX, originalY);
 		}
-		position.setCoords(originalX, originalY);
-
-		//		Game.getInstance().placePiece(this, positionId);
+		selected = false;
 	}
 
 	public void remove() {
 		team.removePiece(this);
+		Game.getInstance().endTurn();
+		Game.getInstance().setState(GameState.MOVE);
 		Sound.CAPTURE.play();
 	}
 
@@ -100,6 +111,19 @@ public class GamePiece extends Drawable {
 		circle(position.getX(), position.getY(), SceneConstants.PIECE_SIZE);
 		gc.setFill(Color.BLACK);
 		//		circle(position.getX(), position.getY(), SceneConstants.PIECE_SIZE);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof GamePiece) {
+			return ((GamePiece) obj).id == id;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 }

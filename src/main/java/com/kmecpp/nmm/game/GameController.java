@@ -174,20 +174,27 @@ public class GameController extends Drawable implements Initializable {
 
 	@FXML
 	private void onMousePressed(MouseEvent e) {
-		for (GamePiece piece : game.getCurrentTeam().getPieces()) {
-			if (!game.getState().isBoardInteractable() && piece.isPlaced()) {
-				continue;
-			}
+		ArrayList<GamePiece> pieces = game.getState() == GameState.REMOVE
+				? game.getCurrentTeam().getOtherTeam().getPieces()
+				: game.getCurrentTeam().getPieces();
+
+		for (GamePiece piece : pieces) {
 			if (piece.isClicked(e)) {
-				if (game.getState() == GameState.REMOVE) {
-					piece.remove();
-				} else {
+				if (piece.isPlaced()) {
+					if (game.getState() == GameState.REMOVE) {
+						piece.remove();
+						break;
+					} else {
+						continue;
+					}
+				} else if (game.getState() != GameState.REMOVE) {
 					piece.select();
 					selectedPiece = piece;
+					break;
 				}
+
 				//					System.out.println(game.getCurrentTeam().getName());
 				//					selectedPiece = piece;
-				break;
 			}
 		}
 
